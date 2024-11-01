@@ -7,8 +7,10 @@ import com.api.udc.domain.RoleName;
 import com.api.udc.global.security.jwt.JwtTokenProvider;
 import com.api.udc.member.dto.SignInReqDto;
 import com.api.udc.member.dto.SignUpDto;
+import com.api.udc.member.dto.UpdateNicknameDto;
 import com.api.udc.member.repository.MemberRepository;
 import com.api.udc.member.repository.RoleRepository;
+import com.api.udc.util.Member.AuthenticationMemberUtils;
 import com.api.udc.util.response.CustomApiResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +30,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final RoleRepository roleRepository;
     private final JwtTokenProvider jwtTokenProvider;
-
+    private final AuthenticationMemberUtils memberUtils;
     @Transactional
     public ResponseEntity<CustomApiResponse<?>> signUp(SignUpDto dto) {
 
@@ -96,4 +98,20 @@ public class MemberService {
                     .body(CustomApiResponse.createFailWithout(HttpStatus.BAD_REQUEST.value(), "아이디가 잘못되었습니다."));
         }
     }
+    public ResponseEntity<CustomApiResponse<?>> updateNickname(UpdateNicknameDto dto) {
+        String currentMemberId = memberUtils.getCurrentMemberId();
+        Optional<Member> optionalMember=memberRepository.findByNickname(dto.getNickname());
+        Optional<Member> optionalMember1=memberRepository.findByMemberId(currentMemberId);
+        if (optionalMember.isPresent()) {
+            throw new RuntimeException("닉네임이 동일한 회원이 존재합니다.");
+        }
+
+        Member member = optionalMember1.get();
+        member.updateNickname(dto.getNickname());
+        memberRepository.save(member);
+        String Update =member.getNickname();
+        CustomApiResponse<?> response=CustomApiResponse.createSuccess(HttpStatus.OK.value(), Update,"닉네임이 변경 완료되었습니다.");
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
 }
