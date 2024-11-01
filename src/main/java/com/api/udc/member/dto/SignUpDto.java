@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -17,6 +18,7 @@ public class SignUpDto {
     private String password;
     @NotNull
     private String nickname;
-    @NotNull
-    List<String> memberRoles;
+
+    List<String> memberRoles=new ArrayList<>();
+
 }

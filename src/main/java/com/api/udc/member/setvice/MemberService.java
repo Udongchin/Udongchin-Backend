@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -36,11 +37,22 @@ public class MemberService {
             CustomApiResponse<?> response = CustomApiResponse.createFailWithout(HttpStatus.BAD_REQUEST.value(), "중복되는 아이디가 존재합니다");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
+        Role adminRole = roleRepository.findByRoleName(RoleName.ROLE_ADMIN)
+                .orElseThrow(() -> new IllegalArgumentException("ROLE_ADMIN은 존재하지 않는 역할입니다."));
 
-        List<Role> roles = dto.getMemberRoles().stream()
+        // memberRoles가 null일 경우 기본 역할로 ROLE_ADMIN 설정
+        List<Role> roles = (dto.getMemberRoles() == null || dto.getMemberRoles().isEmpty())
+                ? Collections.singletonList(adminRole)
+                : dto.getMemberRoles().stream()
                 .map(roleName -> roleRepository.findByRoleName(RoleName.valueOf(roleName))
                         .orElseThrow(() -> new IllegalArgumentException(roleName + "은 존재하지 않는 역할입니다.")))
                 .collect(Collectors.toList());
+
+
+        /*List<Role> roles = dto.getMemberRoles().stream()
+                .map(roleName -> roleRepository.findByRoleName(RoleName.valueOf(roleName))
+                        .orElseThrow(() -> new IllegalArgumentException(roleName + "은 존재하지 않는 역할입니다.")))
+                .collect(Collectors.toList());*/
 
         Member member = Member.toEntity(dto,roles);
         memberRepository.save(member);
