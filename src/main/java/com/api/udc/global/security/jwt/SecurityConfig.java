@@ -32,7 +32,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/signUp", "/api/signIn", "/api/**").permitAll()
+                        .requestMatchers("/api/**").permitAll()
                         .anyRequest().hasAnyAuthority("ROLE_ADMIN")
                 )
                 .exceptionHandling(exceptions -> exceptions
