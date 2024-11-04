@@ -27,7 +27,7 @@ public class QAController {
     }
 
     // QA 개별조회
-    @GetMapping("/{Id}")
+    @GetMapping("/{id}")
     public CustomApiResponse<QADetailResponseDto> getQADetail(@PathVariable Long id) {
         return qaService.getQADetail(id);
     }
