@@ -1,12 +1,10 @@
 package com.api.udc.post.controller;
 
+import com.api.udc.post.dto.QADetailResponseDto;
 import com.api.udc.post.service.QAService;
 import com.api.udc.util.response.CustomApiResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -26,6 +24,12 @@ public class QAController {
             @RequestParam(value = "image", required = false) MultipartFile image) {
 
         return qaService.createQA(title, content, mode, image);
+    }
+
+    // QA 개별조회
+    @GetMapping("/{Id}")
+    public CustomApiResponse<QADetailResponseDto> getQADetail(@PathVariable Long id) {
+        return qaService.getQADetail(id);
     }
 
 }
