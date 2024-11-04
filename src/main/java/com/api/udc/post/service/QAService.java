@@ -1,9 +1,9 @@
 package com.api.udc.post.service;
 
-import com.api.udc.post.dto.QARequestDto;
-import com.api.udc.post.dto.QAResponseDto;
+import com.api.udc.post.dto.QADto;
+import com.api.udc.util.response.CustomApiResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface QAService {
-    QAResponseDto createQA(QARequestDto qaRequestDto, MultipartFile image, String authToken);
+    CustomApiResponse<Long> createQA(String title, String content, MultipartFile image);
 }

@@ -1,19 +1,16 @@
 package com.api.udc.post.dto;
 
+import com.api.udc.domain.QA;
 import lombok.*;
-
-import java.time.LocalDateTime;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class QAResponseDto {
-    private Long id;
+public class QADto {
     private String title;
     private String content;
-    private String type;
-    private String imageUrl;
     private String mode;
-    private LocalDateTime createdAt;
+    private MultipartFile image;
 }

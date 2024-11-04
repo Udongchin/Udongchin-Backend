@@ -29,5 +29,13 @@ public class QA extends BaseEntity {
 
     private String mode;
 
-    private String type = "Q&A";  // Q&A type 설정
+    private String type = "Q&A";
+
+
+    public QA(String title, String content, String mode, String imageUrl) {
+        this.title = title;
+        this.content = content;
+        this.mode = mode;
+        this.imageUrl = imageUrl;
+    }
 }
