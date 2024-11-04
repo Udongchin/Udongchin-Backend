@@ -20,4 +20,8 @@ public class Comment extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "qa_id")
     private QA qa;
+
+    @ManyToOne
+    @JoinColumn(name = "community_id")
+    private Community community;
 }

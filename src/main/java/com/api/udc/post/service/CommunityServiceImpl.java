@@ -1,9 +1,9 @@
 package com.api.udc.post.service;
 
-import com.api.udc.domain.QA;
+import com.api.udc.domain.Community;
 import com.api.udc.post.dto.CommentResponseDto;
-import com.api.udc.post.dto.QADetailResponseDto;
-import com.api.udc.post.repository.QARepository;
+import com.api.udc.post.dto.CommunityDetailResponseDto;
+import com.api.udc.post.repository.CommunityRepository;
 import com.api.udc.util.response.CustomApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,24 +21,20 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class QAServiceImpl implements QAService {
+public class CommunityServiceImpl implements CommunityService {
 
-    private final QARepository qaRepository;
+    private final CommunityRepository communityRepository;
     private final String uploadDir = "";
 
-    // QA 작성
+    // Community 작성
     @Override
-    public CustomApiResponse<Long> createQA(String title, String content, String mode, MultipartFile image) {
+    public CustomApiResponse<Long> createCommunity(String title, String content, MultipartFile image) {
         // 제목과 내용이 비어있는지 확인
         if (title == null || title.trim().isEmpty()) {
             return CustomApiResponse.createFailWithoutData(400, "제목을 작성해주세요.");
         }
         if (content == null || content.trim().isEmpty()) {
             return CustomApiResponse.createFailWithoutData(400, "내용을 작성해주세요.");
-        }
-        // 모드가 유효한지 확인
-        if (!mode.equals("realTimeRecord") && !mode.equals("realTimeQA")) {
-            return CustomApiResponse.createFailWithoutData(400, "mode에 'realTimeRecord' 혹은 'realTimeQA'를 작성해주세요.");
         }
         try {
             String imageUrl = null;
@@ -48,15 +44,15 @@ public class QAServiceImpl implements QAService {
                 imageUrl = saveImage(image);
             }
 
-            // QA 엔티티 생성 및 저장
-            QA qa = new QA(title, content, mode, imageUrl);
-            qa = qaRepository.save(qa);
+            // Community 엔티티 생성 및 저장
+            Community community = new Community(title, content, imageUrl);
+            community = communityRepository.save(community);
 
             // 성공 응답 반환
-            return CustomApiResponse.createSuccess(200, qa.getId(), "QA가 성공적으로 작성되었습니다");
+            return CustomApiResponse.createSuccess(200, community.getId(), "community가 성공적으로 작성되었습니다");
 
         } catch (Exception e) {
-            return CustomApiResponse.createFailWithoutData(500, "QA가 작성되지 않았습니다.");
+            return CustomApiResponse.createFailWithoutData(500, "community가 작성되지 않았습니다.");
         }
     }
 
@@ -77,14 +73,14 @@ public class QAServiceImpl implements QAService {
         return uploadDir + fileName;
     }
 
-    // QA 개별 조회
+    // Community 개별 조회
     @Override
-    public CustomApiResponse<QADetailResponseDto> getQADetail(Long id) {
-        QA qa = qaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("글 찾을 수 없음 " + id));
+    public CustomApiResponse<CommunityDetailResponseDto> getCommunityDetail(Long id) {
+        Community community = communityRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Community 찾을 수 없음: " + id));
 
         // 댓글 리스트 매핑
-        List<CommentResponseDto> commentDtos = qa.getComments().stream()
+        List<CommentResponseDto> commentDtos = community.getComments().stream()
                 .map(comment -> CommentResponseDto.builder()
                         .commenter(comment.getCommenter())
                         .content(comment.getContent())
@@ -92,21 +88,19 @@ public class QAServiceImpl implements QAService {
                         .build())
                 .collect(Collectors.toList());
 
-        // QADetailResponseDto 빌드
-        QADetailResponseDto responseDto = QADetailResponseDto.builder()
-                .id(qa.getId())
-                .title(qa.getTitle())
-                .content(qa.getContent())
-                .type("Q&A")
-                .imageUrl(qa.getImageUrl())
-                .likesCount(qa.getLikes())
-                .commentCount(qa.getComments().size())
-                .urgent(qa.isUrgent())
-                .mode(qa.getMode())
+        // CommunityDetailResponseDto 빌드
+        CommunityDetailResponseDto responseDto = CommunityDetailResponseDto.builder()
+                .id(community.getId())
+                .title(community.getTitle())
+                .content(community.getContent())
+                .type("Community")
+                .imageUrl(community.getImageUrl())
+                .likesCount(community.getLikes())
+                .commentCount(community.getComments().size())
                 .createdAt(LocalDateTime.now())
                 .comments(commentDtos)
                 .build();
 
-        return CustomApiResponse.createSuccess(200, responseDto, "실시간 글이 정상적으로 개별 조회되었습니다.");
+        return CustomApiResponse.createSuccess(200, responseDto, "Community가 정상적으로 개별 조회되었습니다.");
     }
 }
