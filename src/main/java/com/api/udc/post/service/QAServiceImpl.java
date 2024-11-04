@@ -23,6 +23,14 @@ public class QAServiceImpl implements QAService {
 
     @Override
     public CustomApiResponse<Long> createQA(String title, String content, String mode, MultipartFile image) {
+        // 제목과 내용이 비어있는지 확인
+        if (title == null || title.trim().isEmpty()) {
+            return CustomApiResponse.createFailWithoutData(400, "제목을 작성해주세요.");
+        }
+        if (content == null || content.trim().isEmpty()) {
+            return CustomApiResponse.createFailWithoutData(400, "내용을 작성해주세요.");
+        }
+        // 모드가 유효한지 확인
         if (!mode.equals("realTimeRecord") && !mode.equals("realTimeQA")) {
             return CustomApiResponse.createFailWithoutData(400, "mode에 'realTimeRecord' 혹은 'realTimeQA'를 작성해주세요.");
         }
