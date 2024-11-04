@@ -22,9 +22,10 @@ public class QAController {
     public CustomApiResponse<Long> createQA(
             @RequestParam("title") String title,
             @RequestParam("content") String content,
+            @RequestParam("mode") String mode,
             @RequestParam(value = "image", required = false) MultipartFile image) {
 
-        return qaService.createQA(title, content, image);
+        return qaService.createQA(title, content, mode, image);
     }
 
 }

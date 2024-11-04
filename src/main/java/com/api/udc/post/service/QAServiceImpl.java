@@ -22,7 +22,10 @@ public class QAServiceImpl implements QAService {
     private final String uploadDir = "";
 
     @Override
-    public CustomApiResponse<Long> createQA(String title, String content, MultipartFile image) {
+    public CustomApiResponse<Long> createQA(String title, String content, String mode, MultipartFile image) {
+        if (!mode.equals("realTimeRecord") && !mode.equals("realTimeQA")) {
+            return CustomApiResponse.createFailWithoutData(400, "mode에 'realTimeRecord' 혹은 'realTimeQA'를 작성해주세요.");
+        }
         try {
             String imageUrl = null;
 
@@ -32,14 +35,14 @@ public class QAServiceImpl implements QAService {
             }
 
             // QA 엔티티 생성 및 저장
-            QA qa = new QA(title, content, false, imageUrl);
+            QA qa = new QA(title, content, mode, imageUrl);
             qa = qaRepository.save(qa);
 
             // 성공 응답 반환
-            return CustomApiResponse.createSuccess(201, qa.getId(), "QA created successfully");
+            return CustomApiResponse.createSuccess(200, qa.getId(), "QA가 성공적으로 작성되었습니다");
 
         } catch (Exception e) {
-            return CustomApiResponse.createFailWithoutData(500, "Failed to create QA post");
+            return CustomApiResponse.createFailWithoutData(500, "QA가 작성되지 않았습니다.");
         }
     }
 
@@ -54,7 +57,7 @@ public class QAServiceImpl implements QAService {
             }
             Files.copy(image.getInputStream(), uploadPath.resolve(fileName));
         } catch (IOException e) {
-            throw new RuntimeException("Failed to store image file " + originalFileName, e);
+            throw new RuntimeException("이미지 저장 실패 " + originalFileName, e);
         }
         return uploadDir + fileName;
     }
