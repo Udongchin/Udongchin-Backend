@@ -54,10 +54,10 @@ public class FreeServiceImpl implements FreeService {
             free = freeRepository.save(free);
 
             // 성공 응답 반환
-            return CustomApiResponse.createSuccess(200, free.getId(), "자유게시판 게시물가 성공적으로 작성되었습니다");
+            return CustomApiResponse.createSuccess(200, free.getId(), "자유게시판 게시물이 성공적으로 작성되었습니다");
 
         } catch (Exception e) {
-            return CustomApiResponse.createFailWithoutData(500, "자유게시판 게시물가 작성되지 않았습니다.");
+            return CustomApiResponse.createFailWithoutData(500, "자유게시판 게시물이 작성되지 않았습니다.");
         }
     }
 

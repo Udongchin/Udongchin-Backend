@@ -43,9 +43,9 @@ public class FreeController {
     @PutMapping("/{id}")
     public CustomApiResponse<UpdateFreeResponseDto> updateFree(
             @PathVariable Long id,
-            @RequestParam("title") String title,
-            @RequestParam("content") String content,
-            @RequestParam(value = "image", required = false) MultipartFile image) {
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "content", required = false) String content,
+            @RequestParam(value = "image", required = false) MultipartFile image)  {
 
         return freeService.updateFree(id, title, content, image);
     }
