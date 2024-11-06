@@ -24,6 +24,10 @@ public class CustomApiResponse<T> {
     public static <T> CustomApiResponse<T> createSuccessLogin(int status, T data, String message, String Token) {
         return new CustomApiResponse<>(status, data, message,Token);
     }
+    public static <T> CustomApiResponse<T> createSuccessWithoutData(int status, String message) {
+        return new CustomApiResponse<>(status, null, message, null);
+    }
+
 
     // 실패
     public static <T> CustomApiResponse<T> createFailWithoutData(int status, String message) {
