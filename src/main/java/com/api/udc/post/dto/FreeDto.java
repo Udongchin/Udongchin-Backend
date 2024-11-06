@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CommunityDto {
+public class FreeDto {
     private String title;
     private String content;
     private String mode;

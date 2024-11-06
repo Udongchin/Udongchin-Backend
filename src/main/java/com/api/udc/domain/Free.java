@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Community extends BaseEntity {
+public class Free extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,13 +22,13 @@ public class Community extends BaseEntity {
     private String title;
     private String content;
     private String imageUrl;
-    private String type = "Community";
+    private String type = "Free";
     private int likes;
 
-    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "free", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
-    public Community(String title, String content, String imageUrl) {
+    public Free(String title, String content, String imageUrl) {
         this.title = title;
         this.content = content;
         this.imageUrl = imageUrl;

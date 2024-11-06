@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class CommunityDetailResponseDto {
+public class FreeDetailResponseDto {
     private Long id;
     private String title;
     private String content;
