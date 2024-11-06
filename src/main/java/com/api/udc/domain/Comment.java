@@ -24,4 +24,8 @@ public class Comment extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "free_id")
     private Free free;
+
+    @ManyToOne
+    @JoinColumn(name = "ad_id")
+    private Ad ad;
 }
