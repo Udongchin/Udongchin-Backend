@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -104,12 +105,12 @@ public class FreeServiceImpl implements FreeService {
                 .comments(commentDtos)
                 .build();
 
-        return CustomApiResponse.createSuccess(200, responseDto, "자유게시판 게시물가 정상적으로 개별 조회되었습니다.");
+        return CustomApiResponse.createSuccess(200, responseDto, "자유게시판 게시물이 정상적으로 개별 조회되었습니다.");
     }
 
+    // 자유게시판 전체 조회
     @Override
     public CustomApiResponse<List<Object>> getAllPosts() {
-        // Fetch Free posts
         List<FreeDetailResponseDto> freePosts = freeRepository.findAll().stream()
                 .map(free -> FreeDetailResponseDto.builder()
                         .id(free.getId())
@@ -123,7 +124,6 @@ public class FreeServiceImpl implements FreeService {
                         .build())
                 .collect(Collectors.toList());
 
-        // Fetch Q&A posts
         List<FreeDetailResponseDto> qaPosts = qaRepository.findAll().stream()
                 .map(qa -> FreeDetailResponseDto.builder()
                         .id(qa.getId())
@@ -137,10 +137,10 @@ public class FreeServiceImpl implements FreeService {
                         .build())
                 .collect(Collectors.toList());
 
-        // Combine both lists
         List<Object> allPosts = Stream.concat(freePosts.stream(), qaPosts.stream())
+                .sorted(Comparator.comparing(FreeDetailResponseDto::getCreatedAt).reversed())
                 .collect(Collectors.toList());
 
-        return CustomApiResponse.createSuccess(200, allPosts, "All posts retrieved successfully.");
+        return CustomApiResponse.createSuccess(200, allPosts, "자유게시판 게시물이 정상적으로 전체 조회되었습니다.");
     }
 }
