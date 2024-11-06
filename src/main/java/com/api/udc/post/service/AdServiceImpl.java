@@ -1,8 +1,7 @@
 package com.api.udc.post.service;
 
 import com.api.udc.domain.Ad;
-import com.api.udc.post.dto.CommentResponseDto;
-import com.api.udc.post.dto.AdDetailResponseDto;
+import com.api.udc.post.dto.*;
 import com.api.udc.post.repository.AdRepository;
 import com.api.udc.util.response.CustomApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -15,9 +14,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -49,10 +51,10 @@ public class AdServiceImpl implements AdService {
             ad = adRepository.save(ad);
 
             // 성공 응답 반환
-            return CustomApiResponse.createSuccess(200, ad.getId(), "홍보게시판 게시물가 성공적으로 작성되었습니다");
+            return CustomApiResponse.createSuccess(200, ad.getId(), "홍보게시판 게시물이 성공적으로 작성되었습니다");
 
         } catch (Exception e) {
-            return CustomApiResponse.createFailWithoutData(500, "홍보게시판 게시물가 작성되지 않았습니다.");
+            return CustomApiResponse.createFailWithoutData(500, "홍보게시판 게시물이 작성되지 않았습니다.");
         }
     }
 
@@ -77,7 +79,7 @@ public class AdServiceImpl implements AdService {
     @Override
     public CustomApiResponse<AdDetailResponseDto> getAdDetail(Long id) {
         Ad ad = adRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("홍보게시판 게시물 찾을 수 없음: " + id));
+                .orElseThrow(() -> new RuntimeException("홍보게시판 게시물을 찾을 수 없음: " + id));
 
         // 댓글 리스트 매핑
         List<CommentResponseDto> commentDtos = ad.getComments().stream()
@@ -101,6 +103,65 @@ public class AdServiceImpl implements AdService {
                 .comments(commentDtos)
                 .build();
 
-        return CustomApiResponse.createSuccess(200, responseDto, "홍보게시판 게시물가 정상적으로 개별 조회되었습니다.");
+        return CustomApiResponse.createSuccess(200, responseDto, "홍보게시판 게시물이 정상적으로 개별 조회되었습니다.");
+    }
+
+    // 홍보게시판 전체 조회
+    @Override
+    public CustomApiResponse<List<Object>> getAllPosts() {
+        List<AdDetailResponseDto> adPosts = adRepository.findAll().stream()
+                .map(ad -> AdDetailResponseDto.builder()
+                        .id(ad.getId())
+                        .title(ad.getTitle())
+                        .content(ad.getContent())
+                        .type("Ad")
+                        .imageUrl(ad.getImageUrl())
+                        .likesCount(ad.getLikes())
+                        .commentCount(ad.getComments().size())
+                        .createdAt(ad.getCreatedAt())
+                        .build())
+                .collect(Collectors.toList());
+
+        List<Object> allPosts = new ArrayList<>(adPosts);
+
+        return CustomApiResponse.createSuccess(200, allPosts, "홍보게시판 게시물이 정상적으로 전체 조회되었습니다.");
+    }
+
+    // 홍보 게시물 수정
+    @Override
+    public CustomApiResponse<UpdateAdResponseDto> updateAd(Long id, String title, String content, MultipartFile image) {
+        Ad ad = adRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("홍보게시판 게시물을 찾을 수 없습니다: " + id));
+
+        String imageUrl = ad.getImageUrl();
+        if (image != null && !image.isEmpty()) {
+            imageUrl = saveImage(image);
+        }
+
+        // Update entity's fields via its update method
+        ad.update(title, content, imageUrl);
+        adRepository.save(ad);
+
+        // Build response DTO with updated data
+        UpdateAdResponseDto responseDto = UpdateAdResponseDto.builder()
+                .id(ad.getId())
+                .title(ad.getTitle())
+                .content(ad.getContent())
+                .imageUrl(ad.getImageUrl())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        return CustomApiResponse.createSuccess(200, responseDto, "홍보게시판 게시물이 성공적으로 수정되었습니다.");
+    }
+
+
+    // 홍보 게시물 삭제
+    @Override
+    public CustomApiResponse<Void> deleteAd(Long id) {
+        Ad ad = adRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("홍보게시판 게시물을 찾을 수 없습니다: " + id));
+
+        adRepository.delete(ad);
+        return CustomApiResponse.createSuccessWithoutData(200, "홍보게시판 게시물이 성공적으로 삭제되었습니다.");
     }
 }

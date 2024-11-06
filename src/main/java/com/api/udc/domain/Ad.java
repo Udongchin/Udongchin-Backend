@@ -34,4 +34,16 @@ public class Ad extends BaseEntity {
         this.imageUrl = imageUrl;
         this.likes = 0;
     }
+
+    public void update(String title, String content, String imageUrl) {
+        if (title != null && !title.trim().isEmpty()) {
+            this.title = title;
+        }
+        if (content != null && !content.trim().isEmpty()) {
+            this.content = content;
+        }
+        if (imageUrl != null) {
+            this.imageUrl = imageUrl;
+        }
+    }
 }
