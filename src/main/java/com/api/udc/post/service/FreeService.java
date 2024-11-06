@@ -5,7 +5,10 @@ import com.api.udc.post.dto.QADetailResponseDto;
 import com.api.udc.util.response.CustomApiResponse;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 public interface FreeService {
     CustomApiResponse<Long> createFree(String title, String content, MultipartFile image);
     CustomApiResponse<FreeDetailResponseDto> getFreeDetail(Long id);
+    CustomApiResponse<List<Object>> getAllPosts();
 }

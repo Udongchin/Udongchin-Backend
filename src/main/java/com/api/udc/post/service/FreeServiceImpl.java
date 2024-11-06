@@ -4,6 +4,7 @@ import com.api.udc.domain.Free;
 import com.api.udc.post.dto.CommentResponseDto;
 import com.api.udc.post.dto.FreeDetailResponseDto;
 import com.api.udc.post.repository.FreeRepository;
+import com.api.udc.post.repository.QARepository;
 import com.api.udc.util.response.CustomApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,12 +19,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
 public class FreeServiceImpl implements FreeService {
 
     private final FreeRepository freeRepository;
+    private final QARepository qaRepository;
     private final String uploadDir = "";
 
     // Free 작성
@@ -102,5 +105,42 @@ public class FreeServiceImpl implements FreeService {
                 .build();
 
         return CustomApiResponse.createSuccess(200, responseDto, "자유게시판 게시물가 정상적으로 개별 조회되었습니다.");
+    }
+
+    @Override
+    public CustomApiResponse<List<Object>> getAllPosts() {
+        // Fetch Free posts
+        List<FreeDetailResponseDto> freePosts = freeRepository.findAll().stream()
+                .map(free -> FreeDetailResponseDto.builder()
+                        .id(free.getId())
+                        .title(free.getTitle())
+                        .content(free.getContent())
+                        .type("Free")
+                        .imageUrl(free.getImageUrl())
+                        .likesCount(free.getLikes())
+                        .commentCount(free.getComments().size())
+                        .createdAt(free.getCreatedAt())
+                        .build())
+                .collect(Collectors.toList());
+
+        // Fetch Q&A posts
+        List<FreeDetailResponseDto> qaPosts = qaRepository.findAll().stream()
+                .map(qa -> FreeDetailResponseDto.builder()
+                        .id(qa.getId())
+                        .title(qa.getTitle())
+                        .content(qa.getContent())
+                        .type("Q&A")
+                        .imageUrl(qa.getImageUrl())
+                        .likesCount(qa.getLikes())
+                        .commentCount(qa.getComments().size())
+                        .createdAt(qa.getCreatedAt())
+                        .build())
+                .collect(Collectors.toList());
+
+        // Combine both lists
+        List<Object> allPosts = Stream.concat(freePosts.stream(), qaPosts.stream())
+                .collect(Collectors.toList());
+
+        return CustomApiResponse.createSuccess(200, allPosts, "All posts retrieved successfully.");
     }
 }
