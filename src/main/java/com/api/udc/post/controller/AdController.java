@@ -44,8 +44,8 @@ public class AdController {
     @PutMapping("/{id}")
     public CustomApiResponse<UpdateAdResponseDto> updateAd(
             @PathVariable Long id,
-            @RequestParam("title") String title,
-            @RequestParam("content") String content,
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "content", required = false) String content,
             @RequestParam(value = "image", required = false) MultipartFile image) {
 
         return adService.updateAd(id, title, content, image);
