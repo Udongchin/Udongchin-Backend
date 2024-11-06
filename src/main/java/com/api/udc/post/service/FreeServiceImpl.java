@@ -3,6 +3,7 @@ package com.api.udc.post.service;
 import com.api.udc.domain.Free;
 import com.api.udc.post.dto.CommentResponseDto;
 import com.api.udc.post.dto.FreeDetailResponseDto;
+import com.api.udc.post.dto.UpdateFreeResponseDto;
 import com.api.udc.post.repository.FreeRepository;
 import com.api.udc.post.repository.QARepository;
 import com.api.udc.util.response.CustomApiResponse;
@@ -146,20 +147,31 @@ public class FreeServiceImpl implements FreeService {
 
     // 자유 게시물 수정
     @Override
-    public CustomApiResponse<Long> updateFree(Long id, String title, String content, MultipartFile image) {
+    public CustomApiResponse<UpdateFreeResponseDto> updateFree(Long id, String title, String content, MultipartFile image) {
         Free free = freeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("자유게시판 게시물을 찾을 수 없습니다: " + id));
 
-        String imageUrl = null;
+        String imageUrl = free.getImageUrl();
         if (image != null && !image.isEmpty()) {
             imageUrl = saveImage(image);
         }
 
+        // Update entity's fields via its update method
         free.update(title, content, imageUrl);
         freeRepository.save(free);
 
-        return CustomApiResponse.createSuccess(200, free.getId(), "자유게시판 게시물이 성공적으로 수정되었습니다.");
+        // Build response DTO with updated data
+        UpdateFreeResponseDto responseDto = UpdateFreeResponseDto.builder()
+                .id(free.getId())
+                .title(free.getTitle())
+                .content(free.getContent())
+                .imageUrl(free.getImageUrl())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        return CustomApiResponse.createSuccess(200, responseDto, "자유게시판 게시물이 성공적으로 수정되었습니다.");
     }
+
 
     // 자유 게시물 삭제
     @Override

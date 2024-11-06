@@ -1,6 +1,7 @@
 package com.api.udc.post.controller;
 
 import com.api.udc.post.dto.FreeDetailResponseDto;
+import com.api.udc.post.dto.UpdateFreeResponseDto;
 import com.api.udc.post.service.FreeService;
 import com.api.udc.util.response.CustomApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +41,7 @@ public class FreeController {
 
     // 자유게시판 수정
     @PutMapping("/{id}")
-    public CustomApiResponse<Long> updateFree(
+    public CustomApiResponse<UpdateFreeResponseDto> updateFree(
             @PathVariable Long id,
             @RequestParam("title") String title,
             @RequestParam("content") String content,
