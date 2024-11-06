@@ -38,4 +38,21 @@ public class FreeController {
         return freeService.getAllPosts();
     }
 
+    // 자유게시판 수정
+    @PutMapping("/{id}")
+    public CustomApiResponse<Long> updateFree(
+            @PathVariable Long id,
+            @RequestParam("title") String title,
+            @RequestParam("content") String content,
+            @RequestParam(value = "image", required = false) MultipartFile image) {
+
+        return freeService.updateFree(id, title, content, image);
+    }
+
+    // 자유게시판 삭제
+    @DeleteMapping("/{id}")
+    public CustomApiResponse<Void> deleteFree(@PathVariable Long id) {
+        return freeService.deleteFree(id);
+    }
+
 }

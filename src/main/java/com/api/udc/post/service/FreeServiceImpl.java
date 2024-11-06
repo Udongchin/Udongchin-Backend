@@ -143,4 +143,31 @@ public class FreeServiceImpl implements FreeService {
 
         return CustomApiResponse.createSuccess(200, allPosts, "자유게시판 게시물이 정상적으로 전체 조회되었습니다.");
     }
+
+    // 자유 게시물 수정
+    @Override
+    public CustomApiResponse<Long> updateFree(Long id, String title, String content, MultipartFile image) {
+        Free free = freeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("자유게시판 게시물을 찾을 수 없습니다: " + id));
+
+        String imageUrl = null;
+        if (image != null && !image.isEmpty()) {
+            imageUrl = saveImage(image);
+        }
+
+        free.update(title, content, imageUrl);
+        freeRepository.save(free);
+
+        return CustomApiResponse.createSuccess(200, free.getId(), "자유게시판 게시물이 성공적으로 수정되었습니다.");
+    }
+
+    // 자유 게시물 삭제
+    @Override
+    public CustomApiResponse<Void> deleteFree(Long id) {
+        Free free = freeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("자유게시판 게시물을 찾을 수 없습니다: " + id));
+
+        freeRepository.delete(free);
+        return CustomApiResponse.createSuccessWithoutData(200, "자유게시판 게시물이 성공적으로 삭제되었습니다.");
+    }
 }

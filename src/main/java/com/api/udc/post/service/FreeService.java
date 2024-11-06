@@ -11,4 +11,6 @@ public interface FreeService {
     CustomApiResponse<Long> createFree(String title, String content, MultipartFile image);
     CustomApiResponse<FreeDetailResponseDto> getFreeDetail(Long id);
     CustomApiResponse<List<Object>> getAllPosts();
+    CustomApiResponse<Long> updateFree(Long id, String title, String content, MultipartFile image);
+    CustomApiResponse<Void> deleteFree(Long id);
 }

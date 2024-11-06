@@ -2,10 +2,7 @@ package com.api.udc.domain;
 
 import com.api.udc.util.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -33,5 +30,17 @@ public class Free extends BaseEntity {
         this.content = content;
         this.imageUrl = imageUrl;
         this.likes = 0;
+    }
+
+    public void update(String title, String content, String imageUrl) {
+        if (title != null && !title.trim().isEmpty()) {
+            this.title = title;
+        }
+        if (content != null && !content.trim().isEmpty()) {
+            this.content = content;
+        }
+        if (imageUrl != null) {
+            this.imageUrl = imageUrl;
+        }
     }
 }
