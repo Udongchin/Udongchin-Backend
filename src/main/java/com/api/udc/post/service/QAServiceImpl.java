@@ -98,7 +98,7 @@ public class QAServiceImpl implements QAService {
                 .id(qa.getId())
                 .title(qa.getTitle())
                 .content(qa.getContent())
-                .type("Q&A")
+                .type(qa.getType())
                 .imageUrl(qa.getImageUrl())
                 .likesCount(qa.getLikes())
                 .commentCount(qa.getComments().size())
