@@ -2,12 +2,17 @@ package com.api.udc.domain;
 
 import com.api.udc.util.entity.BaseEntity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Entity
 @Getter
 @NoArgsConstructor
-@Entity
+@AllArgsConstructor
+@Builder
+@Table(name="")
 public class Comment extends BaseEntity {
 
     @Id
@@ -31,4 +36,15 @@ public class Comment extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
+
+
+
+    public Comment(String commenter, String content) {
+        this.commenter = commenter;
+        this.content = content;
+
+    }
+    public void setPost(Post post) {
+        this.post = post;
+    }
 }
