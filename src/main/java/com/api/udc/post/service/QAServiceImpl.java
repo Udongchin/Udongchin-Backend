@@ -1,9 +1,12 @@
 package com.api.udc.post.service;
 
+import com.api.udc.domain.Member;
 import com.api.udc.domain.QA;
+import com.api.udc.member.repository.MemberRepository;
 import com.api.udc.post.dto.CommentResponseDto;
 import com.api.udc.post.dto.QADetailResponseDto;
 import com.api.udc.post.repository.QARepository;
+import com.api.udc.util.Member.AuthenticationMemberUtils;
 import com.api.udc.util.response.CustomApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,19 +20,24 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class QAServiceImpl implements QAService {
-
+    private final MemberRepository memberRepository;
+    private final AuthenticationMemberUtils memberUtils;
     private final QARepository qaRepository;
     private final String uploadDir = "";
 
     // QA 작성
     @Override
     public CustomApiResponse<Long> createQA(String title, String content, String mode, MultipartFile image) {
+        String currentMemberId = memberUtils.getCurrentMemberId();
+        Optional<Member> optionalMember=memberRepository.findByMemberId(currentMemberId);
+        Member member=optionalMember.get();
         // 제목과 내용이 비어있는지 확인
         if (title == null || title.trim().isEmpty()) {
             return CustomApiResponse.createFailWithoutData(400, "제목을 작성해주세요.");
@@ -50,7 +58,7 @@ public class QAServiceImpl implements QAService {
             }
 
             // QA 엔티티 생성 및 저장
-            Post qa = new Post(title, content, mode, imageUrl,"실시간");
+            Post qa = new Post(title, content, mode, imageUrl,"실시간",member.getNickname());
             qa = qaRepository.save(qa);
 
             // 성공 응답 반환

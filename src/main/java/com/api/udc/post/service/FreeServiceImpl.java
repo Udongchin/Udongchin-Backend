@@ -1,11 +1,14 @@
 package com.api.udc.post.service;
 
 import com.api.udc.domain.Free;
+import com.api.udc.domain.Member;
+import com.api.udc.member.repository.MemberRepository;
 import com.api.udc.post.dto.CommentResponseDto;
 import com.api.udc.post.dto.FreeDetailResponseDto;
 import com.api.udc.post.dto.UpdateFreeResponseDto;
 import com.api.udc.post.repository.FreeRepository;
 import com.api.udc.post.repository.QARepository;
+import com.api.udc.util.Member.AuthenticationMemberUtils;
 import com.api.udc.util.response.CustomApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,12 +34,17 @@ public class FreeServiceImpl implements FreeService {
 
     private final FreeRepository freeRepository;
     private final QARepository qaRepository;
+    private final AuthenticationMemberUtils memberUtils;
+    private final MemberRepository memberRepository;
     private final String uploadDir = "";
 
     // Free 작성
     @Override
     public CustomApiResponse<Long> createFree(String title, String content, String mode, MultipartFile image) {
         // 제목과 내용이 비어있는지 확인
+        String currentMemberId = memberUtils.getCurrentMemberId();
+        Optional<Member> optionalMember=memberRepository.findByMemberId(currentMemberId);
+        Member member=optionalMember.get();
         if (title == null || title.trim().isEmpty()) {
             return CustomApiResponse.createFailWithoutData(400, "제목을 작성해주세요.");
         }
@@ -51,7 +60,7 @@ public class FreeServiceImpl implements FreeService {
             }
 
             // Free 엔티티 생성 및 저장
-            Post free = new Post(title, content, mode, imageUrl,"자유게시판");
+            Post free = new Post(title, content, mode, imageUrl,"자유게시판",member.getNickname());
             free = freeRepository.save(free);
 
             // 성공 응답 반환
