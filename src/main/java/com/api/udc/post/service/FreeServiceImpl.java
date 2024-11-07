@@ -91,11 +91,22 @@ public class FreeServiceImpl implements FreeService {
     // Free 개별 조회
     @Override
     public CustomApiResponse<FreeDetailResponseDto> getFreeDetail(Long id) {
-        Post free = freeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("자유게시판 게시물 찾을 수 없음: " + id));
+        Optional<Post> optionalPost = freeRepository.findById(id);
+
+        // 게시물이 존재하지 않을 경우 실패 응답 반환
+        if (optionalPost.isEmpty()) {
+            return CustomApiResponse.createFailWithoutData(404, "게시물을 찾을 수 없습니다.");
+        }
+
+        Post post = optionalPost.get();
+
+        // 게시물 타입이 "자유게시판" 또는 "실시간"인지 확인
+        if (!"자유게시판".equals(post.getType()) && !"실시간".equals(post.getType())) {
+            return CustomApiResponse.createFailWithoutData(400, "자유게시판 혹은 실시간 글이 아닙니다.");
+        }
 
         // 댓글 리스트 매핑
-        List<CommentResponseDto> commentDtos = free.getComments().stream()
+        List<CommentResponseDto> commentDtos = post.getComments().stream()
                 .map(comment -> CommentResponseDto.builder()
                         .commenter(comment.getCommenter())
                         .content(comment.getContent())
@@ -105,19 +116,20 @@ public class FreeServiceImpl implements FreeService {
 
         // FreeDetailResponseDto 빌드
         FreeDetailResponseDto responseDto = FreeDetailResponseDto.builder()
-                .id(free.getId())
-                .title(free.getTitle())
-                .content(free.getContent())
-                .type(free.getType())
-                .imageUrl(free.getImageUrl())
-                .likesCount(free.getLikes())
-                .commentCount(free.getComments().size())
-                .createdAt(LocalDateTime.now())
+                .id(post.getId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .type(post.getType())
+                .imageUrl(post.getImageUrl())
+                .likesCount(post.getLikes())
+                .commentCount(post.getComments().size())
+                .createdAt(post.getCreatedAt())
                 .comments(commentDtos)
                 .build();
 
-        return CustomApiResponse.createSuccess(200, responseDto, "자유게시판 게시물이 정상적으로 개별 조회되었습니다.");
+        return CustomApiResponse.createSuccess(200, responseDto, "게시물이 정상적으로 조회되었습니다.");
     }
+
 
     // 자유게시판 전체 조회
     @Override
