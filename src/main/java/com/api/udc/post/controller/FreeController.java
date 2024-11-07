@@ -22,9 +22,10 @@ public class FreeController {
     public CustomApiResponse<Long> createFree(
             @RequestParam("title") String title,
             @RequestParam("content") String content,
+            @RequestParam(value= "mode", required = false ) String mode,
             @RequestParam(value = "image", required = false) MultipartFile image) {
 
-        return freeService.createFree(title, content, image);
+        return freeService.createFree(title, content, mode, image);
     }
 
     // 자유게시판 개별조회

@@ -23,9 +23,10 @@ public class AdController {
     public CustomApiResponse<Long> createAd(
             @RequestParam("title") String title,
             @RequestParam("content") String content,
+            @RequestParam(value ="mode", required = false) String mode,
             @RequestParam(value = "image", required = false) MultipartFile image) {
 
-        return adService.createAd(title, content, image);
+        return adService.createAd(title, content, mode, image);
     }
 
     // 개별조회

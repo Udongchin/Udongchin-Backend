@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.api.udc.domain.Post;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -49,7 +50,7 @@ public class QAServiceImpl implements QAService {
             }
 
             // QA 엔티티 생성 및 저장
-            QA qa = new QA(title, content, mode, imageUrl);
+            Post qa = new Post(title, content, mode, imageUrl);
             qa = qaRepository.save(qa);
 
             // 성공 응답 반환
@@ -80,7 +81,7 @@ public class QAServiceImpl implements QAService {
     // QA 개별 조회
     @Override
     public CustomApiResponse<QADetailResponseDto> getQADetail(Long id) {
-        QA qa = qaRepository.findById(id)
+        Post qa = qaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("글 찾을 수 없음 " + id));
 
         // 댓글 리스트 매핑

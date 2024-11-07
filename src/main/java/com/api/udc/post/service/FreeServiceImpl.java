@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.api.udc.domain.Post;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,7 +34,7 @@ public class FreeServiceImpl implements FreeService {
 
     // Free 작성
     @Override
-    public CustomApiResponse<Long> createFree(String title, String content, MultipartFile image) {
+    public CustomApiResponse<Long> createFree(String title, String content, String mode, MultipartFile image) {
         // 제목과 내용이 비어있는지 확인
         if (title == null || title.trim().isEmpty()) {
             return CustomApiResponse.createFailWithoutData(400, "제목을 작성해주세요.");
@@ -50,7 +51,7 @@ public class FreeServiceImpl implements FreeService {
             }
 
             // Free 엔티티 생성 및 저장
-            Free free = new Free(title, content, imageUrl);
+            Post free = new Post(title, content, mode, imageUrl);
             free = freeRepository.save(free);
 
             // 성공 응답 반환
@@ -81,7 +82,7 @@ public class FreeServiceImpl implements FreeService {
     // Free 개별 조회
     @Override
     public CustomApiResponse<FreeDetailResponseDto> getFreeDetail(Long id) {
-        Free free = freeRepository.findById(id)
+        Post free = freeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("자유게시판 게시물 찾을 수 없음: " + id));
 
         // 댓글 리스트 매핑
@@ -148,7 +149,7 @@ public class FreeServiceImpl implements FreeService {
     // 자유 게시물 수정
     @Override
     public CustomApiResponse<UpdateFreeResponseDto> updateFree(Long id, String title, String content, MultipartFile image) {
-        Free free = freeRepository.findById(id)
+        Post free = freeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("자유게시판 게시물을 찾을 수 없습니다: " + id));
 
         String imageUrl = free.getImageUrl();
@@ -176,7 +177,7 @@ public class FreeServiceImpl implements FreeService {
     // 자유 게시물 삭제
     @Override
     public CustomApiResponse<Void> deleteFree(Long id) {
-        Free free = freeRepository.findById(id)
+        Post free = freeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("자유게시판 게시물을 찾을 수 없습니다: " + id));
 
         freeRepository.delete(free);

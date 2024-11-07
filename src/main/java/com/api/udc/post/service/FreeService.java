@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface FreeService {
-    CustomApiResponse<Long> createFree(String title, String content, MultipartFile image);
+    CustomApiResponse<Long> createFree(String title, String content, String mode, MultipartFile image);
     CustomApiResponse<FreeDetailResponseDto> getFreeDetail(Long id);
     CustomApiResponse<List<Object>> getAllPosts();
     CustomApiResponse<UpdateFreeResponseDto> updateFree(Long id, String title, String content, MultipartFile image);

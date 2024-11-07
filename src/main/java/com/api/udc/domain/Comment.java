@@ -13,7 +13,6 @@ public class Comment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String commenter;
     private String content;
 
@@ -28,4 +27,8 @@ public class Comment extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "ad_id")
     private Ad ad;
+
+    @ManyToOne
+    @JoinColumn(name = "post_id")
+    private Post post;
 }

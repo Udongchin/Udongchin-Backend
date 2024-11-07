@@ -1,6 +1,7 @@
 package com.api.udc.post.service;
 
 import com.api.udc.domain.Ad;
+import com.api.udc.domain.Post;
 import com.api.udc.post.dto.*;
 import com.api.udc.post.repository.AdRepository;
 import com.api.udc.util.response.CustomApiResponse;
@@ -30,7 +31,7 @@ public class AdServiceImpl implements AdService {
 
     // Ad 작성
     @Override
-    public CustomApiResponse<Long> createAd(String title, String content, MultipartFile image) {
+    public CustomApiResponse<Long> createAd(String title, String content, String mode, MultipartFile image) {
         // 제목과 내용이 비어있는지 확인
         if (title == null || title.trim().isEmpty()) {
             return CustomApiResponse.createFailWithoutData(400, "제목을 작성해주세요.");
@@ -46,8 +47,8 @@ public class AdServiceImpl implements AdService {
                 imageUrl = saveImage(image);
             }
 
-            // Ad 엔티티 생성 및 저장
-            Ad ad = new Ad(title, content, imageUrl);
+            // Post 엔티티 생성 및 저장
+            Post ad = new Post(title, content, mode, imageUrl);
             ad = adRepository.save(ad);
 
             // 성공 응답 반환
@@ -78,7 +79,7 @@ public class AdServiceImpl implements AdService {
     // Ad 개별 조회
     @Override
     public CustomApiResponse<AdDetailResponseDto> getAdDetail(Long id) {
-        Ad ad = adRepository.findById(id)
+        Post ad = adRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("홍보게시판 게시물을 찾을 수 없음: " + id));
 
         // 댓글 리스트 매핑
@@ -130,7 +131,7 @@ public class AdServiceImpl implements AdService {
     // 홍보 게시물 수정
     @Override
     public CustomApiResponse<UpdateAdResponseDto> updateAd(Long id, String title, String content, MultipartFile image) {
-        Ad ad = adRepository.findById(id)
+        Post ad = adRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("홍보게시판 게시물을 찾을 수 없습니다: " + id));
 
         String imageUrl = ad.getImageUrl();
@@ -158,7 +159,7 @@ public class AdServiceImpl implements AdService {
     // 홍보 게시물 삭제
     @Override
     public CustomApiResponse<Void> deleteAd(Long id) {
-        Ad ad = adRepository.findById(id)
+        Post ad = adRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("홍보게시판 게시물을 찾을 수 없습니다: " + id));
 
         adRepository.delete(ad);
