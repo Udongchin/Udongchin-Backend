@@ -7,11 +7,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 @Entity
 @Getter
+@Table(name="POST")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -28,8 +30,9 @@ public class Post extends BaseEntity {
     private boolean urgent;
     private int likes;
     private String nickname;
+    private int commentCount;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
 
     public Post(String title, String content, String mode, String imageUrl, String type,String nickname) {
@@ -64,5 +67,8 @@ public class Post extends BaseEntity {
             this.likes -= 1;
         }
     }
-
+    public void addComment(Comment comment) {
+        this.comments.add(comment);
+        comment.setPost(this);  // 양방향 연관 관계 설정
+    }
 }
