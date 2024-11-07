@@ -122,7 +122,9 @@ public class FreeServiceImpl implements FreeService {
     // 자유게시판 전체 조회
     @Override
     public CustomApiResponse<List<Object>> getAllPosts() {
+        // "자유게시판" 타입인 게시물만 조회
         List<FreeDetailResponseDto> freePosts = freeRepository.findAll().stream()
+                .filter(free -> "자유게시판".equals(free.getType()))
                 .map(free -> FreeDetailResponseDto.builder()
                         .id(free.getId())
                         .title(free.getTitle())
@@ -135,7 +137,9 @@ public class FreeServiceImpl implements FreeService {
                         .build())
                 .collect(Collectors.toList());
 
+        // "실시간" 타입인 게시물만 조회
         List<FreeDetailResponseDto> qaPosts = qaRepository.findAll().stream()
+                .filter(qa -> "실시간".equals(qa.getType()))
                 .map(qa -> FreeDetailResponseDto.builder()
                         .id(qa.getId())
                         .title(qa.getTitle())
@@ -148,12 +152,14 @@ public class FreeServiceImpl implements FreeService {
                         .build())
                 .collect(Collectors.toList());
 
+        // 자유게시판과 실시간 게시물들을 시간순으로 정렬하여 병합
         List<Object> allPosts = Stream.concat(freePosts.stream(), qaPosts.stream())
                 .sorted(Comparator.comparing(FreeDetailResponseDto::getCreatedAt).reversed())
                 .collect(Collectors.toList());
 
         return CustomApiResponse.createSuccess(200, allPosts, "자유게시판 게시물이 정상적으로 전체 조회되었습니다.");
     }
+
 
     // 자유 게시물 수정
     @Override
