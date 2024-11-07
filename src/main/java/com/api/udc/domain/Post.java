@@ -32,12 +32,13 @@ public class Post extends BaseEntity {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
-    public Post(String title, String content, String mode, String imageUrl) {
+    public Post(String title, String content, String mode, String imageUrl, String type) {
         this.title = title;
         this.content = content;
         this.mode = mode;
         this.imageUrl = imageUrl;
         this.urgent = false;
+        this.type=type;
         this.likes = 0;
     }
 

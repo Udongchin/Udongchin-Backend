@@ -51,7 +51,7 @@ public class FreeServiceImpl implements FreeService {
             }
 
             // Free 엔티티 생성 및 저장
-            Post free = new Post(title, content, mode, imageUrl);
+            Post free = new Post(title, content, mode, imageUrl,"Free");
             free = freeRepository.save(free);
 
             // 성공 응답 반환

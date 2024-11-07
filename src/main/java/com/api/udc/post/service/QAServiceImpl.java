@@ -50,7 +50,7 @@ public class QAServiceImpl implements QAService {
             }
 
             // QA 엔티티 생성 및 저장
-            Post qa = new Post(title, content, mode, imageUrl);
+            Post qa = new Post(title, content, mode, imageUrl,"Q&A");
             qa = qaRepository.save(qa);
 
             // 성공 응답 반환
