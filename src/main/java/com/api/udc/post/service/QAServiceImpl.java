@@ -38,8 +38,8 @@ public class QAServiceImpl implements QAService {
             return CustomApiResponse.createFailWithoutData(400, "내용을 작성해주세요.");
         }
         // 모드가 유효한지 확인
-        if (!mode.equals("realTimeRecord") && !mode.equals("realTimeQA")) {
-            return CustomApiResponse.createFailWithoutData(400, "mode에 'realTimeRecord' 혹은 'realTimeQA'를 작성해주세요.");
+        if (!mode.equals("실시간 기록") && !mode.equals("실시간 Q&A")) {
+            return CustomApiResponse.createFailWithoutData(400, "mode에 '실시간 기록' 혹은 '실시간 Q&A'를 작성해주세요.");
         }
         try {
             String imageUrl = null;
@@ -50,14 +50,14 @@ public class QAServiceImpl implements QAService {
             }
 
             // QA 엔티티 생성 및 저장
-            Post qa = new Post(title, content, mode, imageUrl,"Q&A");
+            Post qa = new Post(title, content, mode, imageUrl,"실시간");
             qa = qaRepository.save(qa);
 
             // 성공 응답 반환
-            return CustomApiResponse.createSuccess(200, qa.getId(), "QA가 성공적으로 작성되었습니다");
+            return CustomApiResponse.createSuccess(200, qa.getId(), "실시간 게시물이 성공적으로 작성되었습니다");
 
         } catch (Exception e) {
-            return CustomApiResponse.createFailWithoutData(500, "QA가 작성되지 않았습니다.");
+            return CustomApiResponse.createFailWithoutData(500, "실시간 게시물이 작성되지 않았습니다.");
         }
     }
 

@@ -48,7 +48,7 @@ public class AdServiceImpl implements AdService {
             }
 
             // Post 엔티티 생성 및 저장
-            Post ad = new Post(title, content, mode, imageUrl,"Ad");
+            Post ad = new Post(title, content, mode, imageUrl,"홍보게시판");
             ad = adRepository.save(ad);
 
             // 성공 응답 반환
