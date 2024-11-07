@@ -83,11 +83,21 @@ public class AdServiceImpl implements AdService {
     // Ad 개별 조회
     @Override
     public CustomApiResponse<AdDetailResponseDto> getAdDetail(Long id) {
-        Post ad = adRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("홍보게시판 게시물을 찾을 수 없음: " + id));
+        Optional<Post> optionalPost = adRepository.findById(id);
 
+        // 게시물이 존재하지 않을 경우 실패 응답 반환
+        if (optionalPost.isEmpty()) {
+            return CustomApiResponse.createFailWithoutData(404, "게시물을 찾을 수 없습니다.");
+        }
+
+        Post post = optionalPost.get();
+
+        // 게시물 타입이 "홍보게시판"인지 확인
+        if (!"홍보게시판".equals(post.getType())) {
+            return CustomApiResponse.createFailWithoutData(400, "홍보게시판 글이 아닙니다.");
+        }
         // 댓글 리스트 매핑
-        List<CommentResponseDto> commentDtos = ad.getComments().stream()
+        List<CommentResponseDto> commentDtos = post.getComments().stream()
                 .map(comment -> CommentResponseDto.builder()
                         .commenter(comment.getCommenter())
                         .content(comment.getContent())
@@ -97,13 +107,13 @@ public class AdServiceImpl implements AdService {
 
         // AdDetailResponseDto 빌드
         AdDetailResponseDto responseDto = AdDetailResponseDto.builder()
-                .id(ad.getId())
-                .title(ad.getTitle())
-                .content(ad.getContent())
-                .type(ad.getType())
-                .imageUrl(ad.getImageUrl())
-                .likesCount(ad.getLikes())
-                .commentCount(ad.getComments().size())
+                .id(post.getId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .type(post.getType())
+                .imageUrl(post.getImageUrl())
+                .likesCount(post.getLikes())
+                .commentCount(post.getComments().size())
                 .createdAt(LocalDateTime.now())
                 .comments(commentDtos)
                 .build();
@@ -115,6 +125,7 @@ public class AdServiceImpl implements AdService {
     @Override
     public CustomApiResponse<List<Object>> getAllPosts() {
         List<AdDetailResponseDto> adPosts = adRepository.findAll().stream()
+                .filter(free -> "홍보게시판".equals(free.getType()))
                 .map(ad -> AdDetailResponseDto.builder()
                         .id(ad.getId())
                         .title(ad.getTitle())
@@ -135,19 +146,30 @@ public class AdServiceImpl implements AdService {
     // 홍보 게시물 수정
     @Override
     public CustomApiResponse<UpdateAdResponseDto> updateAd(Long id, String title, String content, MultipartFile image) {
-        Post ad = adRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("홍보게시판 게시물을 찾을 수 없습니다: " + id));
+        Optional<Post> optionalPost = adRepository.findById(id);
+
+        // 게시물이 존재하지 않을 경우 실패 응답 반환
+        if (optionalPost.isEmpty()) {
+            return CustomApiResponse.createFailWithoutData(404, "게시물을 찾을 수 없습니다.");
+        }
+
+        Post ad = optionalPost.get();
+
+        // 게시물 타입이 "홍보게시판"인지 확인
+        if (!"홍보게시판".equals(ad.getType())) {
+            return CustomApiResponse.createFailWithoutData(400, "홍보게시판 게시물이 아닙니다.");
+        }
 
         String imageUrl = ad.getImageUrl();
         if (image != null && !image.isEmpty()) {
             imageUrl = saveImage(image);
         }
 
-        // Update entity's fields via its update method
+        // 엔티티 필드 업데이트
         ad.update(title, content, imageUrl);
         adRepository.save(ad);
 
-        // Build response DTO with updated data
+        // UpdateAdResponseDto 빌드
         UpdateAdResponseDto responseDto = UpdateAdResponseDto.builder()
                 .id(ad.getId())
                 .title(ad.getTitle())
@@ -163,9 +185,19 @@ public class AdServiceImpl implements AdService {
     // 홍보 게시물 삭제
     @Override
     public CustomApiResponse<Void> deleteAd(Long id) {
-        Post ad = adRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("홍보게시판 게시물을 찾을 수 없습니다: " + id));
+        Optional<Post> optionalPost = adRepository.findById(id);
 
+        // 게시물이 존재하지 않을 경우 실패 응답 반환
+        if (optionalPost.isEmpty()) {
+            return CustomApiResponse.createFailWithoutData(404, "게시물을 찾을 수 없습니다.");
+        }
+
+        Post ad = optionalPost.get();
+
+        // 게시물 타입이 "자유게시판"인지 확인
+        if (!"홍보게시판".equals(ad.getType())) {
+            return CustomApiResponse.createFailWithoutData(400, "홍보게시판 게시물이 아닙니다.");
+        }
         adRepository.delete(ad);
         return CustomApiResponse.createSuccessWithoutData(200, "홍보게시판 게시물이 성공적으로 삭제되었습니다.");
     }

@@ -90,7 +90,17 @@ public class QAServiceImpl implements QAService {
     @Override
     public CustomApiResponse<QADetailResponseDto> getQADetail(Long id) {
         Post qa = qaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("글 찾을 수 없음 " + id));
+                .orElse(null);
+
+        // If the post is not found, return a failure response
+        if (qa == null) {
+            return CustomApiResponse.createFailWithoutData(404, "게시물을 찾을 수 없습니다.");
+        }
+
+        // Check if the type is "실시간"
+        if (!"실시간".equals(qa.getType())) {
+            return CustomApiResponse.createFailWithoutData(400, "실시간 게시물이 아닙니다.");
+        }
 
         // 댓글 리스트 매핑
         List<CommentResponseDto> commentDtos = qa.getComments().stream()
@@ -105,6 +115,7 @@ public class QAServiceImpl implements QAService {
         QADetailResponseDto responseDto = QADetailResponseDto.builder()
                 .id(qa.getId())
                 .title(qa.getTitle())
+                .nickname(qa.getNickname())
                 .content(qa.getContent())
                 .type(qa.getType())
                 .imageUrl(qa.getImageUrl())
@@ -112,10 +123,12 @@ public class QAServiceImpl implements QAService {
                 .commentCount(qa.getComments().size())
                 .urgent(qa.isUrgent())
                 .mode(qa.getMode())
-                .createdAt(LocalDateTime.now())
+                .createdAt(qa.getCreatedAt())
                 .comments(commentDtos)
                 .build();
 
         return CustomApiResponse.createSuccess(200, responseDto, "실시간 글이 정상적으로 개별 조회되었습니다.");
     }
+
+
 }
