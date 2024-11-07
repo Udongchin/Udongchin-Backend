@@ -176,19 +176,30 @@ public class FreeServiceImpl implements FreeService {
     // 자유 게시물 수정
     @Override
     public CustomApiResponse<UpdateFreeResponseDto> updateFree(Long id, String title, String content, MultipartFile image) {
-        Post free = freeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("자유게시판 게시물을 찾을 수 없습니다: " + id));
+        Optional<Post> optionalPost = freeRepository.findById(id);
+
+        // 게시물이 존재하지 않을 경우 실패 응답 반환
+        if (optionalPost.isEmpty()) {
+            return CustomApiResponse.createFailWithoutData(404, "게시물을 찾을 수 없습니다.");
+        }
+
+        Post free = optionalPost.get();
+
+        // 게시물 타입이 "자유게시판"인지 확인
+        if (!"자유게시판".equals(free.getType())) {
+            return CustomApiResponse.createFailWithoutData(400, "자유게시판 게시물이 아닙니다.");
+        }
 
         String imageUrl = free.getImageUrl();
         if (image != null && !image.isEmpty()) {
             imageUrl = saveImage(image);
         }
 
-        // Update entity's fields via its update method
+        // 엔티티 필드 업데이트
         free.update(title, content, imageUrl);
         freeRepository.save(free);
 
-        // Build response DTO with updated data
+        // UpdateFreeResponseDto 빌드
         UpdateFreeResponseDto responseDto = UpdateFreeResponseDto.builder()
                 .id(free.getId())
                 .title(free.getTitle())
@@ -200,14 +211,25 @@ public class FreeServiceImpl implements FreeService {
         return CustomApiResponse.createSuccess(200, responseDto, "자유게시판 게시물이 성공적으로 수정되었습니다.");
     }
 
-
     // 자유 게시물 삭제
     @Override
     public CustomApiResponse<Void> deleteFree(Long id) {
-        Post free = freeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("자유게시판 게시물을 찾을 수 없습니다: " + id));
+        Optional<Post> optionalPost = freeRepository.findById(id);
+
+        // 게시물이 존재하지 않을 경우 실패 응답 반환
+        if (optionalPost.isEmpty()) {
+            return CustomApiResponse.createFailWithoutData(404, "게시물을 찾을 수 없습니다.");
+        }
+
+        Post free = optionalPost.get();
+
+        // 게시물 타입이 "자유게시판"인지 확인
+        if (!"자유게시판".equals(free.getType())) {
+            return CustomApiResponse.createFailWithoutData(400, "자유게시판 게시물이 아닙니다.");
+        }
 
         freeRepository.delete(free);
         return CustomApiResponse.createSuccessWithoutData(200, "자유게시판 게시물이 성공적으로 삭제되었습니다.");
     }
+
 }
