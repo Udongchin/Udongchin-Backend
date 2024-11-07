@@ -54,4 +54,15 @@ public class Post extends BaseEntity {
             this.imageUrl = imageUrl;
         }
     }
+
+    public void incrementLikes() {
+        this.likes += 1;
+    }
+
+    public void decrementLikes() {
+        if (this.likes > 0) {
+            this.likes -= 1;
+        }
+    }
+
 }
