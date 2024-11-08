@@ -30,12 +30,16 @@ public class Post extends BaseEntity {
     private boolean urgent;
     private int likes;
     private String nickname;
-    private int commentCount;
+    private int commentCount=0;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
 
-    public Post(String title, String content, String mode, String imageUrl, String type,String nickname) {
+    public void setUrgent(boolean urgent) {
+        this.urgent = urgent;
+    }
+
+    public Post(String title, String content, String mode, String imageUrl, String type, String nickname) {
         this.title = title;
         this.content = content;
         this.mode = mode;
@@ -69,6 +73,7 @@ public class Post extends BaseEntity {
     }
     public void addComment(Comment comment) {
         this.comments.add(comment);
-        comment.setPost(this);  // 양방향 연관 관계 설정
+        comment.setPost(this);// 양방향 연관 관계 설정
+        this.commentCount++;
     }
 }
