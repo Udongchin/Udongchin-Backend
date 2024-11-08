@@ -2,15 +2,21 @@ package com.api.udc.post.service;
 
 import com.api.udc.domain.Free;
 import com.api.udc.domain.Member;
+import com.api.udc.domain.Warn;
 import com.api.udc.member.repository.MemberRepository;
 import com.api.udc.post.dto.CommentResponseDto;
 import com.api.udc.post.dto.FreeDetailResponseDto;
 import com.api.udc.post.dto.UpdateFreeResponseDto;
+import com.api.udc.post.dto.WarnDto;
 import com.api.udc.post.repository.FreeRepository;
+import com.api.udc.post.repository.PostRepository;
 import com.api.udc.post.repository.QARepository;
+import com.api.udc.post.repository.WarnRepository;
 import com.api.udc.util.Member.AuthenticationMemberUtils;
 import com.api.udc.util.response.CustomApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,8 +40,10 @@ public class FreeServiceImpl implements FreeService {
 
     private final FreeRepository freeRepository;
     private final QARepository qaRepository;
+    private final WarnRepository warnRepository;
     private final AuthenticationMemberUtils memberUtils;
     private final MemberRepository memberRepository;
+    private final PostRepository postRepository;
     private final String uploadDir = "";
 
     // Free 작성
@@ -232,4 +240,18 @@ public class FreeServiceImpl implements FreeService {
         return CustomApiResponse.createSuccessWithoutData(200, "자유게시판 게시물이 성공적으로 삭제되었습니다.");
     }
 
+    @Override
+    public ResponseEntity<CustomApiResponse<?>> warn(Long id, WarnDto dto) {
+        Optional<Post> optionalPost = postRepository.findById(id);
+        if(optionalPost.isEmpty()){
+            CustomApiResponse<?> response = CustomApiResponse.createFailWithout(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "해당 게시글이 존재하지 않습니다."
+            );
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+        Warn warn=new Warn(id,dto.getReason(), dto.getMessage());
+        warnRepository.save(warn);
+        return ResponseEntity.ok(CustomApiResponse.createSuccess(200, warn, "신고가 정상적으로 접수되었습니다"));
+    }
 }

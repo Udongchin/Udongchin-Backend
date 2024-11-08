@@ -5,10 +5,13 @@ import com.api.udc.domain.QA;
 import com.api.udc.member.repository.MemberRepository;
 import com.api.udc.post.dto.CommentResponseDto;
 import com.api.udc.post.dto.QADetailResponseDto;
+import com.api.udc.post.dto.UpdateQaResponseDto;
 import com.api.udc.post.repository.QARepository;
 import com.api.udc.util.Member.AuthenticationMemberUtils;
 import com.api.udc.util.response.CustomApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -130,5 +133,44 @@ public class QAServiceImpl implements QAService {
         return CustomApiResponse.createSuccess(200, responseDto, "실시간 글이 정상적으로 개별 조회되었습니다.");
     }
 
+    @Override
+    public ResponseEntity<CustomApiResponse<?>> urgent(Long id) {
+        Optional<Post> optionalPost = qaRepository.findById(id);
+
+        if (optionalPost.isEmpty()) {
+            CustomApiResponse<?> response = CustomApiResponse.createFailWithout(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "해당 ID의 게시글이 존재하지 않습니다."
+            );
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+        Post qa = optionalPost.get();
+        if (!"실시간".equals(qa.getType())) {
+            CustomApiResponse<?> response = CustomApiResponse.createFailWithout(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "해당 게시글이 존재하지 않습니다."
+            );
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+
+        qa.setUrgent(true);
+        qaRepository.save(qa);
+        UpdateQaResponseDto qa2=new UpdateQaResponseDto(
+                qa.getId(),
+                qa.getTitle(),
+                qa.getContent(),
+                qa.getType(),
+                qa.getImageUrl(),
+                qa.getLikes(),
+                qa.getComments().size(),
+                qa.isUrgent(),
+                qa.getUpdatedAt()
+
+        );
+        // Save the updated post
+
+        CustomApiResponse<?> response = CustomApiResponse.createSuccess(200,qa2,"긴급 표시가 설정되었습니다.");
+        return ResponseEntity.ok(response);
+    }
 
 }

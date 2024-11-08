@@ -4,6 +4,7 @@ import com.api.udc.post.dto.QADetailResponseDto;
 import com.api.udc.post.service.QAService;
 import com.api.udc.util.response.CustomApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,4 +33,9 @@ public class QAController {
         return qaService.getQADetail(id);
     }
 
+    @PostMapping("/{postId}/urgent")
+    public ResponseEntity<CustomApiResponse<?>> urgent(@PathVariable Long postId) {
+        ResponseEntity<CustomApiResponse<?>> response = qaService.urgent(postId);
+        return response;
+    }
 }

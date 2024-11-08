@@ -198,3 +198,7 @@ gradle-app.setting
 *.jpg
 *.jpeg
 *.png
+*.mp4
+*.txt
+*.gif
+*.pdf
