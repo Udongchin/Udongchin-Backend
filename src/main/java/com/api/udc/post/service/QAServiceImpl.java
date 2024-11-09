@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -37,7 +38,7 @@ public class QAServiceImpl implements QAService {
 
     // QA 작성
     @Override
-    public CustomApiResponse<Long> createQA(String title, String content, String mode, MultipartFile image) {
+    public CustomApiResponse<Long> createQA(String title, String content, String mode, MultipartFile image,List<String> location) {
         String currentMemberId = memberUtils.getCurrentMemberId();
         Optional<Member> optionalMember=memberRepository.findByMemberId(currentMemberId);
         Member member=optionalMember.get();
@@ -62,6 +63,7 @@ public class QAServiceImpl implements QAService {
 
             // QA 엔티티 생성 및 저장
             Post qa = new Post(title, content, mode, imageUrl,"실시간",member.getNickname());
+            qa.setLocation(location);
             qa = qaRepository.save(qa);
 
             // 성공 응답 반환
@@ -128,9 +130,43 @@ public class QAServiceImpl implements QAService {
                 .mode(qa.getMode())
                 .createdAt(qa.getCreatedAt())
                 .comments(commentDtos)
+                .location(qa.getLocation())
                 .build();
 
         return CustomApiResponse.createSuccess(200, responseDto, "실시간 글이 정상적으로 개별 조회되었습니다.");
+    }
+
+    @Override
+    public CustomApiResponse<List<QADetailResponseDto>> getAllQA() {
+        String currentMemberId = memberUtils.getCurrentMemberId();
+        Optional<Member> optionalMember=memberRepository.findByMemberId(currentMemberId);
+        Member member=optionalMember.get();
+        List<QADetailResponseDto> qaDetails = new ArrayList<>();
+        List<Post> qaPosts = qaRepository.findByNickname(member.getNickname());
+
+        for (Post qa : qaPosts) {
+            if (!"실시간 기록".equals(qa.getType()) && !"실시간 Q&A".equals(qa.getType())) {
+
+            }
+
+            QADetailResponseDto qaDetailResponseDto = QADetailResponseDto.builder()
+                    .id(qa.getId())
+                    .nickname(qa.getNickname())
+                    .title(qa.getTitle())
+                    .content(qa.getContent())
+                    .type(qa.getType())
+                    .imageUrl(qa.getImageUrl())
+                    .likesCount(qa.getLikes())
+                    .commentCount(qa.getCommentCount())
+                    .urgent(qa.isUrgent())
+                    .mode(qa.getMode())
+                    .createdAt(qa.getCreatedAt())
+                    .location(qa.getLocation())
+                    .build();
+
+            qaDetails.add(qaDetailResponseDto);
+        }
+        return CustomApiResponse.createSuccess(200, qaDetails, "실시간 글이 정상적으로 조회되었습니다.");
     }
 
     @Override
