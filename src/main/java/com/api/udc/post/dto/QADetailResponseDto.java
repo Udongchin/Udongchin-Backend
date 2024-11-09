@@ -20,5 +20,6 @@ public class QADetailResponseDto {
     private String mode;
     private LocalDateTime createdAt;
     private List<CommentResponseDto> comments;
+    private List<String> location;
 
 }

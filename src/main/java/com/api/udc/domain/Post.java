@@ -31,6 +31,8 @@ public class Post extends BaseEntity {
     private int likes;
     private String nickname;
     private int commentCount=0;
+    @ElementCollection
+    private List<String> location;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
@@ -75,5 +77,8 @@ public class Post extends BaseEntity {
         this.comments.add(comment);
         comment.setPost(this);// 양방향 연관 관계 설정
         this.commentCount++;
+    }
+    public void setLocation(List<String> location) {
+        this.location = location;
     }
 }
