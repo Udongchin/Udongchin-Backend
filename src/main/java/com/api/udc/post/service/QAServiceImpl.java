@@ -148,6 +148,13 @@ public class QAServiceImpl implements QAService {
             if (!"실시간 기록".equals(qa.getType()) && !"실시간 Q&A".equals(qa.getType())) {
 
             }
+            List<CommentResponseDto> commentDtos = qa.getComments().stream()
+                    .map(comment -> CommentResponseDto.builder()
+                            .commenter(comment.getCommenter())
+                            .content(comment.getContent())
+                            .createdAt(comment.getCreatedAt())
+                            .build())
+                    .collect(Collectors.toList());
 
             QADetailResponseDto qaDetailResponseDto = QADetailResponseDto.builder()
                     .id(qa.getId())
@@ -158,6 +165,7 @@ public class QAServiceImpl implements QAService {
                     .imageUrl(qa.getImageUrl())
                     .likesCount(qa.getLikes())
                     .commentCount(qa.getCommentCount())
+                    .comments(commentDtos)
                     .urgent(qa.isUrgent())
                     .mode(qa.getMode())
                     .createdAt(qa.getCreatedAt())
