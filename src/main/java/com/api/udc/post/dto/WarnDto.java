@@ -6,10 +6,10 @@ import lombok.Data;
 public class WarnDto {
     private Long id;
     private String reason;
-    private String message;
+    private String customReason;
     public WarnDto(Long id,String reason, String message) {
         this.id = id;
         this.reason = reason;
-        this.message = message;
+        this.customReason = customReason;
     }
 }
