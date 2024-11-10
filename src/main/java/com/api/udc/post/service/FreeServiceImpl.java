@@ -250,7 +250,7 @@ public class FreeServiceImpl implements FreeService {
             );
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
-        Warn warn=new Warn(id,dto.getReason(), dto.getMessage());
+        Warn warn=new Warn(id,dto.getReason(), dto.getCustomReason());
         warnRepository.save(warn);
         return ResponseEntity.ok(CustomApiResponse.createSuccess(200, warn, "신고가 정상적으로 접수되었습니다"));
     }
