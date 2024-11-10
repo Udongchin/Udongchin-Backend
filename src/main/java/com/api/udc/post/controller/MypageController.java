@@ -36,5 +36,10 @@ public class MypageController {
         return response;
     }
     @GetMapping("/like")
+    public ResponseEntity<CustomApiResponse<?>> getMyLike(String id) {
+        String currentMemberId = memberUtils.getCurrentMemberId();
+        ResponseEntity<CustomApiResponse<?>> response=postService.getMyLike(currentMemberId);
+        return response;
+    }
 
 }
