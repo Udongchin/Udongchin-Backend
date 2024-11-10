@@ -28,12 +28,14 @@ public class ReportServiceImp implements ReportService {
     public ResponseEntity<CustomApiResponse<?>> createReport(ReportDto dto) {
         try {
             List<String> imageUrls = new ArrayList<>();
-
+            boolean noAnimal =false;
             // 이미지가 있는 경우에만 파일을 저장하고 이미지 URL 리스트 생성
             if (dto.getImage() != null && !dto.getImage().isEmpty()) {
                 imageUrls = saveImages(dto.getImage());
             }
-
+            if(dto.getAnimal().isEmpty()) {
+                noAnimal = dto.getAnimal().isEmpty();
+            }
             boolean noImage = imageUrls.isEmpty();
 
             // Report 객체 생성
@@ -43,7 +45,9 @@ public class ReportServiceImp implements ReportService {
                     imageUrls,
                     dto.getLocation(),
                     dto.getLocation_description(),
-                    noImage
+                    noImage,
+                    noAnimal
+
             );
 
             reportRepository.save(report);
