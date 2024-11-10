@@ -6,10 +6,7 @@ import com.api.udc.domain.Comment;
 import com.api.udc.domain.Member;
 import com.api.udc.domain.Post;
 import com.api.udc.member.repository.MemberRepository;
-import com.api.udc.post.dto.CommentDetailDto;
-import com.api.udc.post.dto.CommentResponseDto;
-import com.api.udc.post.dto.PostDeatilResponseDto;
-import com.api.udc.post.dto.QADetailResponseDto;
+import com.api.udc.post.dto.*;
 import com.api.udc.post.repository.PostRepository;
 import com.api.udc.util.response.CustomApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -85,6 +82,27 @@ public class PostServiceImp implements PostService {
             commentDetails.add(commentResponseDto);
         }
         return ResponseEntity.status(HttpStatus.OK)
-                .body(CustomApiResponse.createSuccess(200,commentDetails,"게시물 조회가 완료되었습니다."));
+                .body(CustomApiResponse.createSuccess(200,commentDetails,"댓글조회가 완료되었습니다."));
+    }
+
+    public ResponseEntity<CustomApiResponse<?>> getMyLike(String id) {
+        Optional<Member> optionalMember=memberRepository.findByMemberId(id);
+        Member member=optionalMember.get();
+        List<LikeDetailDto> likeDetails = new ArrayList<>();
+        List<Post> Likes=postRepository.findByNickname(member.getNickname());
+        for (Post post : Likes) {
+            if(post.getLikes()==0){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(CustomApiResponse.createFailWithoutData(404, "좋아요 표시한 게시물이 존재하지 않습니다."));
+            }
+            LikeDetailDto Like= LikeDetailDto.builder()
+                    .title(post.getTitle())
+                    .likesCount(post.getLikes())
+                    .imageUrl(post.getImageUrl())
+                    .build();
+            likeDetails.add(Like);
+        }
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CustomApiResponse.createSuccess(200,likeDetails,"좋아요 표시한 게시물 조회가 완료되었습니다."));
     }
 }
