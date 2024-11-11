@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
@@ -27,7 +28,7 @@ public class Member extends BaseEntity {
     @Column(name="memberId",nullable=false, unique=true)
     private String memberId;
 
-    @Column(name="password", nullable=false, unique=true)
+    @Column(name="password", nullable=false)
     private String password;
 
     @OneToMany(mappedBy = "member",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
