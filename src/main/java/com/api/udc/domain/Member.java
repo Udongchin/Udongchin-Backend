@@ -27,7 +27,7 @@ public class Member extends BaseEntity {
     @Column(name="memberId",nullable=false, unique=true)
     private String memberId;
 
-    @Column(name="password", nullable=false, unique=true)
+    @Column(name="password", nullable=false)
     private String password;
 
     @OneToMany(mappedBy = "member",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
