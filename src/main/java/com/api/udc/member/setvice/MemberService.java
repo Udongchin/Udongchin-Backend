@@ -31,18 +31,27 @@ public class MemberService {
     private final RoleRepository roleRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationMemberUtils memberUtils;
+
     @Transactional
     public ResponseEntity<CustomApiResponse<?>> signUp(SignUpDto dto) {
 
-        Optional<Member> optionalUser = memberRepository.findByMemberId(dto.getMemberId());
-        if (optionalUser.isPresent()) {
+        // 아이디 중복 검사
+        Optional<Member> optionalUserById = memberRepository.findByMemberId(dto.getMemberId());
+        if (optionalUserById.isPresent()) {
             CustomApiResponse<?> response = CustomApiResponse.createFailWithout(HttpStatus.BAD_REQUEST.value(), "중복되는 아이디가 존재합니다");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
+
+        // 닉네임 중복 검사
+        Optional<Member> optionalUserByNickname = memberRepository.findByNickname(dto.getNickname());
+        if (optionalUserByNickname.isPresent()) {
+            CustomApiResponse<?> response = CustomApiResponse.createFailWithout(HttpStatus.BAD_REQUEST.value(), "중복되는 닉네임이 존재합니다");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+
+        // 회원 역할 설정
         Role adminRole = roleRepository.findByRoleName(RoleName.ROLE_ADMIN)
                 .orElseThrow(() -> new IllegalArgumentException("ROLE_ADMIN은 존재하지 않는 역할입니다."));
-
-        // memberRoles가 null일 경우 기본 역할로 ROLE_ADMIN 설정
         List<Role> roles = (dto.getMemberRoles() == null || dto.getMemberRoles().isEmpty())
                 ? Collections.singletonList(adminRole)
                 : dto.getMemberRoles().stream()
@@ -50,20 +59,17 @@ public class MemberService {
                         .orElseThrow(() -> new IllegalArgumentException(roleName + "은 존재하지 않는 역할입니다.")))
                 .collect(Collectors.toList());
 
-
-        /*List<Role> roles = dto.getMemberRoles().stream()
-                .map(roleName -> roleRepository.findByRoleName(RoleName.valueOf(roleName))
-                        .orElseThrow(() -> new IllegalArgumentException(roleName + "은 존재하지 않는 역할입니다.")))
-                .collect(Collectors.toList());*/
-
-        Member member = Member.toEntity(dto,roles);
+        // 회원 정보 저장
+        Member member = Member.toEntity(dto, roles);
         memberRepository.save(member);
 
         // 디버깅용 코드
-        member.getMemberRoles().forEach(memberRole -> System.out.println("Saved role for ,member: " + memberRole.getRole().getRoleName()));
-        CustomApiResponse<?> response=CustomApiResponse.createSuccess(HttpStatus.OK.value(), null,"회원가입에 성공하였습니다");
+        member.getMemberRoles().forEach(memberRole -> System.out.println("Saved role for member: " + memberRole.getRole().getRoleName()));
+
+        CustomApiResponse<?> response = CustomApiResponse.createSuccess(HttpStatus.OK.value(), null, "회원가입에 성공하였습니다");
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
 
     public ResponseEntity<CustomApiResponse<?>> signIn(SignInReqDto dto) {
         Member member = memberRepository.findByMemberId(dto.getMemberId()).orElseThrow(RuntimeException::new);
