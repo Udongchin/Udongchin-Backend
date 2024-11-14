@@ -22,10 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -138,15 +135,13 @@ public class QAServiceImpl implements QAService {
 
     @Override
     public CustomApiResponse<List<QADetailResponseDto>> getAllQA() {
-        String currentMemberId = memberUtils.getCurrentMemberId();
-        Optional<Member> optionalMember=memberRepository.findByMemberId(currentMemberId);
-        Member member=optionalMember.get();
+
         List<QADetailResponseDto> qaDetails = new ArrayList<>();
-        List<Post> qaPosts = qaRepository.findByNickname(member.getNickname());
+        List<Post> qaPosts = qaRepository.findAll();
 
         for (Post qa : qaPosts) {
-            if (!"실시간 기록".equals(qa.getType()) && !"실시간 Q&A".equals(qa.getType())) {
-
+            if (!"실시간".equals(qa.getType())) {
+                continue;
             }
             List<CommentResponseDto> commentDtos = qa.getComments().stream()
                     .map(comment -> CommentResponseDto.builder()
@@ -176,6 +171,7 @@ public class QAServiceImpl implements QAService {
         }
         return CustomApiResponse.createSuccess(200, qaDetails, "실시간 글이 정상적으로 조회되었습니다.");
     }
+
 
     @Override
     public ResponseEntity<CustomApiResponse<?>> urgent(Long id) {

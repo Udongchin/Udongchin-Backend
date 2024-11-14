@@ -143,12 +143,15 @@ public class FreeServiceImpl implements FreeService {
     @Override
     public CustomApiResponse<List<Object>> getAllPosts() {
         // "자유게시판" 타입인 게시물만 조회
+
+
         List<FreeDetailResponseDto> freePosts = freeRepository.findAll().stream()
                 .filter(free -> "자유게시판".equals(free.getType()))
                 .map(free -> FreeDetailResponseDto.builder()
                         .id(free.getId())
                         .title(free.getTitle())
                         .content(free.getContent())
+                        .contenter(String.valueOf(memberRepository.findByNickname(free.getNickname()).get().getMemberId()))
                         .type(free.getType())
                         .imageUrl(free.getImageUrl())
                         .likesCount(free.getLikes())
@@ -164,6 +167,7 @@ public class FreeServiceImpl implements FreeService {
                         .id(qa.getId())
                         .title(qa.getTitle())
                         .content(qa.getContent())
+                        .contenter(String.valueOf(memberRepository.findByNickname(qa.getNickname()).get().getMemberId()))
                         .type(qa.getType())
                         .imageUrl(qa.getImageUrl())
                         .likesCount(qa.getLikes())

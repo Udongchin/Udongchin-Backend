@@ -37,7 +37,7 @@ public class FreeController {
     }
 
     // 자유게시판 전체 조회 (실시간, 자유게시물 모두 조회)
-    @GetMapping
+    @GetMapping()
     public CustomApiResponse<List<Object>> getAllPosts() {
         return freeService.getAllPosts();
     }
