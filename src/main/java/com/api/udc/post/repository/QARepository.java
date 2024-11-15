@@ -12,4 +12,7 @@ public interface QARepository extends JpaRepository<Post, Long> {
     List<Post> findByNickname(String nickname);
 
     List<Post> findAllByTypeAndCreatedAtBefore(String type, LocalDateTime dateTime);
+
+    List<Post> findAllByTypeAndUrgentAndUpdatedAtBefore(String type, boolean urgent, LocalDateTime updatedAt);
+
 }

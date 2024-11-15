@@ -231,4 +231,22 @@ public class QAServiceImpl implements QAService {
             System.out.println("삭제할 게시글 없음");
         }
     }
+
+    // 긴급 건을 24시간 이후 false로 설정하는 스케줄링
+    @Scheduled(cron = "0 0 * * * ?") // 매 정시에 실행
+    @Transactional
+    public void resetUrgentStatus() {
+        LocalDateTime twentyFourHoursAgo = LocalDateTime.now().minusHours(24);
+
+        // 24시간이 지난 "긴급" 상태의 게시글 조회
+        List<Post> urgentPosts = qaRepository.findAllByTypeAndUrgentAndUpdatedAtBefore("실시간", true, twentyFourHoursAgo);
+
+        if (!urgentPosts.isEmpty()) {
+            urgentPosts.forEach(post -> post.setUrgent(false));
+            qaRepository.saveAll(urgentPosts);
+            System.out.println("긴급 상태 초기화 완료: " + urgentPosts.size() + "개 게시글의 긴급 상태가 해제됨");
+        } else {
+            System.out.println("긴급 상태를 초기화할 게시글이 없음");
+        }
+    }
 }
