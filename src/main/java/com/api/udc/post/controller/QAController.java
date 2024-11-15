@@ -34,6 +34,7 @@ public class QAController {
     public CustomApiResponse<QADetailResponseDto> getQADetail(@PathVariable Long id) {
         return qaService.getQADetail(id);
     }
+
     @GetMapping
     public CustomApiResponse<List<QADetailResponseDto>> getAllQA() {
         return qaService.getAllQA();

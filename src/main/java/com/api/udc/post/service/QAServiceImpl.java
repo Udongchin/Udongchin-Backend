@@ -9,9 +9,11 @@ import com.api.udc.post.dto.UpdateQaResponseDto;
 import com.api.udc.post.repository.QARepository;
 import com.api.udc.util.Member.AuthenticationMemberUtils;
 import com.api.udc.util.response.CustomApiResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -172,7 +174,7 @@ public class QAServiceImpl implements QAService {
         return CustomApiResponse.createSuccess(200, qaDetails, "실시간 글이 정상적으로 조회되었습니다.");
     }
 
-
+    // 긴급
     @Override
     public ResponseEntity<CustomApiResponse<?>> urgent(Long id) {
         Optional<Post> optionalPost = qaRepository.findById(id);
@@ -213,4 +215,20 @@ public class QAServiceImpl implements QAService {
         return ResponseEntity.ok(response);
     }
 
+    // 7일 지난 게시글 삭제 스케줄링
+    @Scheduled(cron = "0 0 0 * * ?") // 매일 자정 실행
+    @Transactional
+    public void deleteOldPosts() {
+        LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
+
+        // 7일이 지난 "실시간" 게시글 삭제
+        List<Post> postsToDelete = qaRepository.findAllByTypeAndCreatedAtBefore("실시간", sevenDaysAgo);
+
+        if (!postsToDelete.isEmpty()) {
+            qaRepository.deleteAll(postsToDelete);
+            System.out.println("7일 지난 게시글 삭제 완료: " + postsToDelete.size() + "개 삭제됨");
+        } else {
+            System.out.println("삭제할 게시글 없음");
+        }
+    }
 }
