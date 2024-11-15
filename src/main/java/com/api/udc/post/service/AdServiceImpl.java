@@ -28,7 +28,7 @@ public class AdServiceImpl implements AdService {
     private final MemberRepository memberRepository;
     private final AuthenticationMemberUtils memberUtils;
     private final AdRepository adRepository;
-    private final String uploadDir = "";
+    private final String uploadDir = "images/";
 
     // Ad 작성
     @Override

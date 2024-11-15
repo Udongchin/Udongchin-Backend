@@ -31,7 +31,7 @@ public class QAServiceImpl implements QAService {
     private final MemberRepository memberRepository;
     private final AuthenticationMemberUtils memberUtils;
     private final QARepository qaRepository;
-    private final String uploadDir = "";
+    private final String uploadDir = "images/";
 
     // QA 작성
     @Override

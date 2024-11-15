@@ -44,7 +44,7 @@ public class FreeServiceImpl implements FreeService {
     private final AuthenticationMemberUtils memberUtils;
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
-    private final String uploadDir = "";
+    private final String uploadDir = "images/";
 
     // Free 작성
     @Override
@@ -127,6 +127,7 @@ public class FreeServiceImpl implements FreeService {
                 .id(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
+                .contenter(String.valueOf(memberRepository.findByNickname(post.getNickname()).get().getMemberId()))
                 .type(post.getType())
                 .imageUrl(post.getImageUrl())
                 .likesCount(post.getLikes())
