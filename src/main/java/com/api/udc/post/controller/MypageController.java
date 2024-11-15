@@ -21,7 +21,12 @@ public class MypageController {
     private final PostService postService;
     private final AuthenticationMemberUtils memberUtils;
     private final MemberRepository memberRepository;
-
+    @GetMapping
+    public ResponseEntity<CustomApiResponse<?>> getMyId(String id) {
+        String currentMemberId = memberUtils.getCurrentMemberId();
+        ResponseEntity<CustomApiResponse<?>> response=postService.getMyId(currentMemberId);
+        return response;
+    }
     @GetMapping("/post")
     public ResponseEntity<CustomApiResponse<?>> getMyPost(String id) {
         String currentMemberId = memberUtils.getCurrentMemberId();

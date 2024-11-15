@@ -105,4 +105,17 @@ public class PostServiceImp implements PostService {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CustomApiResponse.createSuccess(200,likeDetails,"좋아요 표시한 게시물 조회가 완료되었습니다."));
     }
+
+    @Override
+    public ResponseEntity<CustomApiResponse<?>> getMyId(String currentMemberId) {
+        Optional<Member> optionalMember=memberRepository.findByMemberId(currentMemberId);
+        Member member=optionalMember.get();
+        member.getNickname();
+        MypageDto dto =MypageDto.builder()
+                .member_id(currentMemberId)
+                .nickname(member.getNickname())
+                .build();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CustomApiResponse.createSuccess(200,dto,"내아이디 닉네임 조회 성공"));
+    }
 }

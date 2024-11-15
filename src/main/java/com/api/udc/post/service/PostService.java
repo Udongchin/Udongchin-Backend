@@ -9,4 +9,6 @@ public interface PostService {
     ResponseEntity<CustomApiResponse<?>> getMyComment(String currentMemberId);
 
     ResponseEntity<CustomApiResponse<?>> getMyLike(String currentMemberId);
+
+    ResponseEntity<CustomApiResponse<?>> getMyId(String currentMemberId);
 }
