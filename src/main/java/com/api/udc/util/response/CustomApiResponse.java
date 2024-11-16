@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.http.ResponseEntity;
+
+import java.util.List;
 
 
 @Getter
@@ -17,6 +20,7 @@ public class CustomApiResponse<T> {
     private T data;
     private String message;
     private String Token;
+
     // 성공
     public static <T> CustomApiResponse<T> createSuccess(int status, T data, String message) {
         return new CustomApiResponse<>(status, data, message, null);
@@ -36,5 +40,7 @@ public class CustomApiResponse<T> {
     public static <T> CustomApiResponse<T> createFailWithout(int status,String message){
         return new CustomApiResponse<>(status, null,message,null);
     }
+
+
 
 }

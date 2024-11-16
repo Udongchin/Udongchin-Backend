@@ -110,6 +110,7 @@ public class AdServiceImpl implements AdService {
                 .id(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
+                .contenter(String.valueOf(memberRepository.findByNickname(post.getNickname()).get().getMemberId()))
                 .type(post.getType())
                 .imageUrl(post.getImageUrl())
                 .likesCount(post.getLikes())
@@ -175,6 +176,7 @@ public class AdServiceImpl implements AdService {
                 .id(ad.getId())
                 .title(ad.getTitle())
                 .content(ad.getContent())
+                .contenter(String.valueOf(memberRepository.findByNickname(ad.getNickname()).get().getMemberId()))
                 .imageUrl(ad.getImageUrl())
                 .updatedAt(LocalDateTime.now())
                 .build();

@@ -11,6 +11,7 @@ public class UpdateAdResponseDto {
     private Long id;
     private String title;
     private String content;
+    private String contenter;
     private String imageUrl;
     private LocalDateTime updatedAt;
 }
