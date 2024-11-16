@@ -1,10 +1,13 @@
 package com.api.udc.post.service;
 
-import com.api.udc.comments.dto.CommentDto;
+
 import com.api.udc.comments.repository.CommentRepository;
 import com.api.udc.domain.Comment;
+import com.api.udc.domain.Like;
 import com.api.udc.domain.Member;
 import com.api.udc.domain.Post;
+
+import com.api.udc.like.repository.LikeRepository;
 import com.api.udc.member.repository.MemberRepository;
 import com.api.udc.post.dto.*;
 import com.api.udc.post.repository.PostRepository;
@@ -25,6 +28,7 @@ public class PostServiceImp implements PostService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
+    private final LikeRepository likeRepository;
 
 
     public ResponseEntity<CustomApiResponse<?>> getMyPost(String id) {
@@ -89,19 +93,19 @@ public class PostServiceImp implements PostService {
         Optional<Member> optionalMember=memberRepository.findByMemberId(id);
         Member member=optionalMember.get();
         List<LikeDetailDto> likeDetails = new ArrayList<>();
-        List<Post> Likes=postRepository.findByNickname(member.getNickname());
-        for (Post post : Likes) {
-            if(post.getLikes()==0){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(CustomApiResponse.createFailWithoutData(404, "좋아요 표시한 게시물이 존재하지 않습니다."));
+        List<Like> Likes=likeRepository.findAll();
+        for (Like post : Likes) {
+            if(!post.getMember().getMemberId().equals(member.getMemberId())) {
+                continue;
             }
-            LikeDetailDto Like= LikeDetailDto.builder()
-                    .title(post.getTitle())
-                    .liker(String.valueOf(memberRepository.findByNickname(post.getNickname()).get().getMemberId()))
-                    .likesCount(post.getLikes())
-                    .imageUrl(post.getImageUrl())
+            LikeDetailDto Like1= LikeDetailDto.builder()
+                    .title(String.valueOf(post.getPost().getTitle()))
+                    .liker(member.getMemberId())
+                    .post_id(post.getPost().getId())
+                    .likesCount(post.getPost().getLikes())
+                    .imageUrl(post.getPost().getImageUrl())
                     .build();
-            likeDetails.add(Like);
+            likeDetails.add(Like1);
         }
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CustomApiResponse.createSuccess(200,likeDetails,"좋아요 표시한 게시물 조회가 완료되었습니다."));

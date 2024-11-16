@@ -1,7 +1,6 @@
-package com.api.udc.like.domain;
+package com.api.udc.domain;
 
-import com.api.udc.domain.Member;
-import com.api.udc.domain.Post;
+
 import com.api.udc.util.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

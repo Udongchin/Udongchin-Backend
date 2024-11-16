@@ -1,12 +1,13 @@
 package com.api.udc.like.service;
 
+import com.api.udc.domain.Like;
 import com.api.udc.domain.Member;
 import com.api.udc.domain.Post;
-import com.api.udc.like.domain.Like;
+
 import com.api.udc.like.repository.LikeRepository;
 import com.api.udc.post.repository.PostRepository;
 import com.api.udc.member.repository.MemberRepository;
-import com.api.udc.like.service.LikeService;
+
 import com.api.udc.util.Member.AuthenticationMemberUtils;
 import com.api.udc.util.response.CustomApiResponse;
 import lombok.RequiredArgsConstructor;
