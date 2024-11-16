@@ -130,6 +130,7 @@ public class AdServiceImpl implements AdService {
                         .id(ad.getId())
                         .title(ad.getTitle())
                         .content(ad.getContent())
+                        .contenter(String.valueOf(memberRepository.findByNickname(ad.getNickname()).get().getMemberId()))
                         .type(ad.getType())
                         .imageUrl(ad.getImageUrl())
                         .likesCount(ad.getLikes())

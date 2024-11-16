@@ -12,6 +12,7 @@ public class AdDetailResponseDto {
     private Long id;
     private String title;
     private String content;
+    private String contenter;
     private String type;
     private String imageUrl;
     private int likesCount;

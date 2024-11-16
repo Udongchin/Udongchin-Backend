@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 @Builder
 public class LikeDetailDto {
     private int likesCount;
+    private String liker;
     private String title;
     private String imageUrl;
 }

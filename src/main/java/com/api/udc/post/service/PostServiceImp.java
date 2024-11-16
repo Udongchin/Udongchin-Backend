@@ -97,6 +97,7 @@ public class PostServiceImp implements PostService {
             }
             LikeDetailDto Like= LikeDetailDto.builder()
                     .title(post.getTitle())
+                    .liker(String.valueOf(memberRepository.findByNickname(post.getNickname()).get().getMemberId()))
                     .likesCount(post.getLikes())
                     .imageUrl(post.getImageUrl())
                     .build();
